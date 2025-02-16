@@ -89,12 +89,28 @@ app.get('/coinsLatest', authenticate, (req, res) => {
 });
 
 app.post('/coinHistory', authenticate, async (req, res) => {
-    const { name } = req.body;
+    const { name, limit } = req.body;
     if (!name) return res.status(400).json({ error: 'Coin name is required' });
-    
+    if (!limit) return res.status(400).json({ error: 'Coin History Limit is required' });
+
     const historyTable = `${name.toUpperCase()}_history`;
-    const query = `SELECT * FROM ${historyTable} ORDER BY timestamp DESC;`;
-    
+
+    const limitMapping = {
+        "1h": "1 hour",
+        "6h": "6 hours",
+        "12h": "12 hours",
+        "1d": "1 day",
+        "3d": "3 days",
+        "7d": "7 days"
+    };
+    if (!limitMapping[limit]) return res.status(400).json({ error: 'Invalid limit' });
+
+    const query = `
+        SELECT * FROM ${historyTable}
+        WHERE timestamp >= strftime('%s', 'now', '-${limitMapping[limit]}')
+        ORDER BY timestamp DESC;
+    `;
+
     try {
         const response = await axios.post(DBMAX_API_URL, {
             auth: AUTH_KEY,
