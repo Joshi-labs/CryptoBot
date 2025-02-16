@@ -115,6 +115,7 @@ async function deleteOldData() {
     if (!coinCache.data.length) {
         console.log("No coins in cache, skipping cleanup.");
         maintainance = false;
+        console.log("Maintenance mode OFF.");
         return;
     }
 
