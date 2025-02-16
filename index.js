@@ -66,12 +66,12 @@ async function insertCoinHistory(coin) {
     const historyTable = `${coin.code}_history`;
     const createTableQuery = `CREATE TABLE IF NOT EXISTS ${historyTable} (price REAL, volume REAL, marketCap REAL, timestamp INTEGER);`;
     const insertQuery = `INSERT INTO ${historyTable} (price, volume, marketCap, timestamp) 
-                         VALUES (${coin.rate}, ${coin.volume}, ${coin.cap}, ${Date.now() - 10 * 24 * 60 * 60 * 1000});`; // ${Date.now()}
+                         VALUES (${coin.rate}, ${coin.volume}, ${coin.cap}, ${Date.now()});`; // ${Date.now()}
     
     try {
         await axios.post(DBMAX_API_URL, { auth: AUTH_KEY, query: createTableQuery }, { headers: { 'Content-Type': 'application/json' } });
         const response = await axios.post(DBMAX_API_URL, { auth: AUTH_KEY, query: insertQuery }, { headers: { 'Content-Type': 'application/json' } });
-        console.log(`Historical data inserted into ${historyTable}:`, response.data);
+        //console.log(`Historical data inserted into ${historyTable}:`, response.data);
     } catch (error) {
         console.error(`Error inserting historical data into ${historyTable}:`, error.message);
     }
@@ -148,7 +148,7 @@ async function deleteOldData() {
                     headers: { 'Content-Type': 'application/json' }
                 });
 
-                console.log(`Deleted old data from ${tableName}:`, response.data);
+                //console.log(`Deleted old data from ${tableName}:`, response.data);
             } catch (error) {
                 console.error(`Error deleting from ${tableName}:`, error.message);
             }
@@ -164,6 +164,6 @@ async function deleteOldData() {
 setInterval(deleteOldData, 6 * 60 * 60 * 1000); 
 deleteOldData();
 
-setInterval(fetchTopCoins, 20000);
+setInterval(fetchTopCoins, 30 * 1000);
 
 app.listen(5555, () => console.log('Server running on port 5555'));
