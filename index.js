@@ -107,7 +107,7 @@ app.post('/coinHistory', authenticate, async (req, res) => {
 
     const query = `
         SELECT * FROM ${historyTable}
-        WHERE timestamp >= strftime('%s', 'now', '-${limitMapping[limit]}')
+        WHERE timestamp >= strftime('%s', 'now', '-${limitMapping[limit]}') * 1000
         ORDER BY timestamp DESC;
     `;
 
